@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -30,9 +31,12 @@ import com.knightbyte.answers.presentation.ui.theme.MyPurple200
 import com.knightbyte.answers.presentation.ui.theme.MyPurple500
 import com.knightbyte.answers.presentation.ui.theme.MyPurple700
 import com.knightbyte.answers.presentation.ui.theme.promptSans
+import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    answersViewModel: AnswersViewModel = hiltViewModel()
+) {
     // navigation Controller
     val navController = rememberNavController()
 
@@ -40,7 +44,9 @@ fun MainScreen() {
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) {
         BottomNavGraph(
-            navController = navController
+            navController = navController,
+            answersViewModel = answersViewModel
+
         )
     }
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,7 @@ import com.knightbyte.answers.presentation.ui.theme.promptSans
 
 @Composable
 fun TotalAnswers(
-    total: Int = 0
+    total: Int? = null
 ) {
     Card(
         shape = RoundedCornerShape(25.dp),
@@ -43,32 +44,35 @@ fun TotalAnswers(
                     end = 10.dp
                 ),
         ) {
+            if(total!=null) {
+                val textStyle = TextStyle(
+                    color = MyPurple700,
+                    fontFamily = promptSans
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter),
+                    text = total.toString(),
+                    style = textStyle,
+                    fontSize = 60.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Normal
+                )
 
-            val textStyle = TextStyle(
-                color = MyPurple700,
-                fontFamily = promptSans
-            )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter),
-                text = total.toString(),
-                style = textStyle,
-                fontSize = 60.sp,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Normal
-            )
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomEnd),
-                text = "Total Answer",
-                style = textStyle,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Light,
-                textAlign = TextAlign.Center
-            )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomEnd),
+                    text = "Total Answer",
+                    style = textStyle,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Light,
+                    textAlign = TextAlign.Center
+                )
+            }else{
+                CircularProgressIndicator()
+            }
 
         }
 

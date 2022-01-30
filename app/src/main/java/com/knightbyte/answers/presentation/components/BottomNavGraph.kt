@@ -7,10 +7,12 @@ import androidx.navigation.compose.composable
 import com.knightbyte.answers.presentation.ui.screens.DownloadScreen
 import com.knightbyte.answers.presentation.ui.screens.HomeScreen
 import com.knightbyte.answers.presentation.ui.screens.SearchScreen
+import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 
 @Composable
 fun BottomNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    answersViewModel: AnswersViewModel
 ) {
     NavHost(
         navController = navController,
@@ -20,7 +22,10 @@ fun BottomNavGraph(
             route = BottomNavigationBar.Home.route
         ) {
             // Home Screen Here
-            HomeScreen(navController = navController)
+            HomeScreen(
+                navController = navController,
+                answersViewModel =answersViewModel
+            )
         }
 
         composable(
