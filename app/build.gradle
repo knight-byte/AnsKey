@@ -87,4 +87,7 @@ dependencies {
 
     def activity_version = "1.4.0"
     implementation("androidx.activity:activity-ktx:$activity_version")
+
+    def ui_controller_version="0.22.0-rc"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$ui_controller_version"
 }
