@@ -11,43 +11,62 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.knightbyte.answers.presentation.ui.theme.MyPurple200
 
 @Composable
-fun SearchBar (
-    text: MutableState<TextFieldValue>,
-    onSearch: (String) -> Unit = {},
+fun SearchBar(
+    text: MutableState<String>,
 ) {
+
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
     ) {
+        val isTextFieldFocus = remember {
+            mutableStateOf(false)
+        }
         TextField(
             value = text.value,
             onValueChange = { value ->
                 text.value = value
             },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MyPurple200)
+                .onFocusChanged { focusState ->
+                    when {
+                        focusState.hasFocus -> {
+                            isTextFieldFocus.value = true
+                        }
+                        else -> {
+                            isTextFieldFocus.value = false
+                        }
+                    }
+                },
             label = {
+                val fontSize: TextUnit = if (isTextFieldFocus.value || text.value.isNotEmpty()) {
+                    12.sp
+                } else {
+                    16.sp
+                }
                 Text(
                     text = "Search",
                     style = TextStyle(
                         color = Color.Black,
-                        fontSize = 16.sp
+                        fontSize = fontSize
                     ),
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MyPurple200),
+
             textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),
             leadingIcon = {
                 Icon(
@@ -63,10 +82,3 @@ fun SearchBar (
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun Preview() {
-//    val textState = remember { mutableStateOf(TextFieldValue("Search...")) }
-//    SearchBar(textState)
-//}
