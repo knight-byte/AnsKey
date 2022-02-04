@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,8 @@ answersViewModel: AnswersViewModel
                     .padding(start = 10.dp)
                 ,
                 text = "Results ( ${result.size} )",
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                color = Color.Black
 
             )
             Spacer(modifier = Modifier.height(15.dp))
