@@ -3,6 +3,8 @@ package com.knightbyte.answers.presentation.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
@@ -10,13 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.knightbyte.answers.presentation.components.SearchBar
+import com.knightbyte.answers.presentation.components.SingleCard
 import com.knightbyte.answers.presentation.ui.theme.MyPurple100
+import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 
 @Composable
 fun SearchScreen(
-navController: NavHostController
+navController: NavHostController,
+answersViewModel: AnswersViewModel
 ){
     var textState = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -36,9 +42,35 @@ navController: NavHostController
                     })
             }
     ) {
+        val result = answersViewModel.searchFiles(textState.value)
         Column {
             SearchBar(textState)
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp)
+                ,
+                text = "Results ( ${result.size} )",
+                fontSize = 20.sp
 
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            if(result.isNotEmpty()) {
+                LazyColumn {
+                    item {
+                        result.forEach { answer ->
+                            val title = "${answer.testType} - ${answer.testName}"
+                            SingleCard(
+                                title = title,
+                                testName = answer.testLevel,
+                            )
+                            Spacer(modifier = Modifier.height(15.dp))
+                        }
+                        Spacer(modifier = Modifier.height(60.dp))
+                    }
+                }
+            }
         }
     }
 

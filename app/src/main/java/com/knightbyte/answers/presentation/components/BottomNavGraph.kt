@@ -32,7 +32,10 @@ fun BottomNavGraph(
             route = BottomNavigationBar.Search.route
         ) {
             // Search Screen Here
-            SearchScreen(navController = navController)
+            SearchScreen(
+                navController = navController,
+                answersViewModel = answersViewModel
+            )
         }
 
         composable(

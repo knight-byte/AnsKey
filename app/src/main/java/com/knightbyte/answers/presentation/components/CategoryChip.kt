@@ -18,15 +18,25 @@ import com.knightbyte.answers.presentation.ui.theme.MyPurple200
 import com.knightbyte.answers.presentation.ui.theme.MyPurple500
 import com.knightbyte.answers.presentation.ui.theme.MyPurple700
 import com.knightbyte.answers.presentation.ui.theme.promptSans
+import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 
 
 @Composable
 fun CategoryChip(
     title: String = "All",
     isSelected: Boolean = false,
-    onClick: () -> Unit = {}
+    answersViewModel: AnswersViewModel
 ) {
     val background = if (isSelected) MyPurple500 else MyPurple200
+
+    val onClick = {
+        if (title == "All"){
+            answersViewModel.homeCategory.value = ""
+        } else {
+            answersViewModel.homeCategory.value = title
+        }
+    }
+
     Box(
         modifier = Modifier
             .clip(CircleShape)

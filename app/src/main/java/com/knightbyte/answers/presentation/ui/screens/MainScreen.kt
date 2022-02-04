@@ -100,7 +100,7 @@ fun CustomBottomNavigationItem(
     val isSelected = currentDestination.hierarchy.any { it.route == screen.route }
 
     val background = if (isSelected) MyPurple500 else Color.Transparent
-    val contentColor = if (isSelected) MyPurple700 else MaterialTheme.colors.onBackground
+    val contentColor = if (isSelected) MyPurple700 else Color.Black
     val onClick = {
         if (!currentDestination.hierarchy.any {
                 it.route == screen.route

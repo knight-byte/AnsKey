@@ -91,4 +91,7 @@ dependencies {
 
     def ui_controller_version="0.22.0-rc"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$ui_controller_version"
+
+    def fuzzy_wuzzy_version = "1.4.0"
+    implementation "me.xdrop:fuzzywuzzy:$fuzzy_wuzzy_version"
 }

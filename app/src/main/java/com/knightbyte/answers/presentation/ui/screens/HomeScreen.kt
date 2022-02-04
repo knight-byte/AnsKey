@@ -6,13 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.knightbyte.answers.domain.model.TestFile
 import com.knightbyte.answers.presentation.components.CategoryChip
@@ -28,21 +24,24 @@ import com.knightbyte.answers.utils.Resource
 fun HomeScreen(
     navController: NavHostController,
     answersViewModel: AnswersViewModel
-){
+) {
 
 
     val allfiles = answersViewModel.allFiles.value
-    var total:Int? = null
-    var answers:List<TestFile>? = null
-    when(allfiles){
+    var total: Int? = null
+    var rawAnswers: List<TestFile>? = null
+    val query = answersViewModel.homeCategory.value
+
+    when (allfiles) {
         is Resource.Success -> {
             total = allfiles.data?.size
-            answers = allfiles.data
+            rawAnswers = allfiles.data
         }
-        is Resource.Error ->{
+        is Resource.Error -> {
             allfiles.message?.let { Log.d(CUSTOM_ERROR_DEBUG_LOG, it) }
         }
-        else -> {}
+        else -> {
+        }
     }
 
 
@@ -64,29 +63,31 @@ fun HomeScreen(
             ) {
                 TotalAnswers(total = total)
                 Spacer(modifier = Modifier.width(10.dp))
-                LatestUpdate("30 Jan, 2022","Examly Level 5")
+                LatestUpdate("30 Jan, 2022", "Examly Level 5")
             }
             Spacer(modifier = Modifier.height(10.dp))
 
 
             // Static for testing ( WIP )
             val category = listOf(
-                Pair("All",true),
-                Pair("Examly",false),
-                Pair("HBE",false),
-                Pair("InfyQt",false),
-                Pair("Amcat",false),
+                "All",
+                "Examly",
+                "HBE",
+                "InfyQt",
+                "Amcat",
             )
             LazyRow {
                 item {
                     category.forEach { cat ->
-                        CategoryChip(cat.first, cat.second)
+                        val isSelected = (query == cat || (query == "" && cat == "All"))
+                        CategoryChip(cat, isSelected, answersViewModel)
                         Spacer(modifier = Modifier.width(15.dp))
                     }
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))
-            if(answers !=null) {
+            if (rawAnswers != null) {
+                val answers = answersViewModel.searchFiles(query)
                 LazyColumn {
                     item {
                         answers.forEach { answer ->
