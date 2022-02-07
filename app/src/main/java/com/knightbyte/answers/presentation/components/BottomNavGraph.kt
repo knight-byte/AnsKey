@@ -1,5 +1,6 @@
 package com.knightbyte.answers.presentation.components
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,6 +9,7 @@ import com.knightbyte.answers.presentation.ui.screens.DownloadScreen
 import com.knightbyte.answers.presentation.ui.screens.HomeScreen
 import com.knightbyte.answers.presentation.ui.screens.SearchScreen
 import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Composable
 fun BottomNavGraph(
@@ -24,7 +26,7 @@ fun BottomNavGraph(
             // Home Screen Here
             HomeScreen(
                 navController = navController,
-                answersViewModel =answersViewModel
+                answersViewModel = answersViewModel
             )
         }
 
@@ -42,7 +44,10 @@ fun BottomNavGraph(
             route = BottomNavigationBar.Download.route
         ) {
             // Download Screen Here
-            DownloadScreen(navController = navController)
+            DownloadScreen(
+                navController = navController,
+                answersViewModel = answersViewModel
+            )
         }
     }
 }

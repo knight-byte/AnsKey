@@ -1,7 +1,9 @@
 package com.knightbyte.answers.presentation.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.knightbyte.answers.domain.model.TestFile
 import com.knightbyte.answers.repository.DriveFileRepository
@@ -9,6 +11,8 @@ import com.knightbyte.answers.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
+import com.knightbyte.answers.network.cache.AppFiles
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
@@ -18,6 +22,7 @@ class AnswersViewModel @Inject constructor(
 ) : ViewModel() {
     val allFiles: MutableState<Resource<List<TestFile>>> = mutableStateOf(Resource.Empty())
     val homeCategory : MutableState<String> = mutableStateOf("")
+    val appFile = AppFiles()
     init {
         loadFiles()
     }
