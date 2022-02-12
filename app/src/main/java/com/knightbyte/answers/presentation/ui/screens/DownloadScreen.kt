@@ -1,9 +1,9 @@
 package com.knightbyte.answers.presentation.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,12 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.knightbyte.answers.network.cache.AppFiles
 import com.knightbyte.answers.presentation.components.SingleCard
 import com.knightbyte.answers.presentation.ui.theme.MyPurple100
-import com.knightbyte.answers.presentation.ui.theme.MyPurple200
 import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
-import java.time.format.TextStyle
 
 @Composable
 fun DownloadScreen(
@@ -45,7 +42,7 @@ fun DownloadScreen(
 //            )
             Spacer(modifier = Modifier.height(15.dp))
             Text(
-                text = "Downloaded ( ${answersViewModel.appFile.getFilesList(context)} )",
+                text = "Downloaded ( ${answersViewModel.appFile.getFileListSize(context)} )",
                 fontSize = 18.sp,
                 color = Color.Black
             )
@@ -71,6 +68,20 @@ fun DownloadScreen(
                     }
                 }
             }
+            Button(onClick = {
+                answersViewModel.fileDownloader(
+                    "https://imgs.xkcd.com/comics/python.png",
+                    "PythonMeme.png",
+                    "Python Meme",
+                    context
+                    )
+            }) {
+                Text(
+                    text = "Download",
+                    color = Color.Black
+                )
+            }
         }
     }
 }
+

@@ -1,9 +1,22 @@
 package com.knightbyte.answers.presentation.viewmodel
 
+import android.annotation.TargetApi
+import android.app.DownloadManager
 import android.content.Context
+import android.content.Context.DOWNLOAD_SERVICE
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION_CODES.M
+import android.os.Environment
+import android.os.FileUtils
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.knightbyte.answers.domain.model.TestFile
 import com.knightbyte.answers.repository.DriveFileRepository
@@ -15,6 +28,11 @@ import com.knightbyte.answers.network.cache.AppFiles
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import me.xdrop.fuzzywuzzy.FuzzySearch
+import androidx.core.net.toUri
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.util.jar.Manifest
 
 @HiltViewModel
 class AnswersViewModel @Inject constructor(
@@ -23,6 +41,7 @@ class AnswersViewModel @Inject constructor(
     val allFiles: MutableState<Resource<List<TestFile>>> = mutableStateOf(Resource.Empty())
     val homeCategory : MutableState<String> = mutableStateOf("")
     val appFile = AppFiles()
+
     init {
         loadFiles()
     }
@@ -53,5 +72,25 @@ class AnswersViewModel @Inject constructor(
             }
         }
         return result
+    }
+
+    fun fileDownloader(url: String, outputName: String, desc: String, context: Context) {
+        //val dir = appFile.getCurDir(context)
+        val appDir: String = "AnswerKey"
+        val dir = File(Environment.DIRECTORY_DOCUMENTS)
+        if (!dir.exists())
+            dir.mkdirs()
+        //val appDirUri = dir.toUri()
+        val request = DownloadManager.Request(Uri.parse(url))
+            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+            .setTitle(outputName)
+            .setDescription(desc)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setAllowedOverMetered(true)
+            .setAllowedOverRoaming(true)
+            .setDestinationInExternalPublicDir(dir.toString(), "AnsKey/${outputName}")
+
+        val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        dm.enqueue(request)
     }
 }
