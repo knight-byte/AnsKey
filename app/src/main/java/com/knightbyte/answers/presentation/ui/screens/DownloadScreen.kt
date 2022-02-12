@@ -6,6 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -41,8 +44,15 @@ fun DownloadScreen(
 //                color = Color.Black
 //            )
             Spacer(modifier = Modifier.height(15.dp))
+            val totalDownload = remember {
+                mutableStateOf(0)
+            }
+            SideEffect {
+            totalDownload.value = answersViewModel.appFile.getFileListSize(context)
+
+            }
             Text(
-                text = "Downloaded ( ${answersViewModel.appFile.getFileListSize(context)} )",
+                text = "Downloaded ( ${totalDownload.value} )",
                 fontSize = 18.sp,
                 color = Color.Black
             )
@@ -73,7 +83,7 @@ fun DownloadScreen(
                     "https://imgs.xkcd.com/comics/python.png",
                     "PythonMeme.png",
                     "Python Meme",
-                    context
+                    context = context
                     )
             }) {
                 Text(

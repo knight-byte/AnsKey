@@ -7,11 +7,8 @@ import android.content.Context.DOWNLOAD_SERVICE
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION_CODES.M
 import android.os.Environment
-import android.os.FileUtils
-import androidx.appcompat.app.AlertDialog
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
@@ -25,22 +22,22 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.knightbyte.answers.network.cache.AppFiles
+import com.knightbyte.answers.repository.AuthRepository
+import com.knightbyte.answers.utils.CUSTOM_INFO_DEBUG_LOG
+import com.knightbyte.answers.utils.DRIVE_API_BASE_URL
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import me.xdrop.fuzzywuzzy.FuzzySearch
-import androidx.core.net.toUri
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.util.jar.Manifest
 
 @HiltViewModel
 class AnswersViewModel @Inject constructor(
     private val listFileRepository: DriveFileRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     val allFiles: MutableState<Resource<List<TestFile>>> = mutableStateOf(Resource.Empty())
-    val homeCategory : MutableState<String> = mutableStateOf("")
+    val homeCategory: MutableState<String> = mutableStateOf("")
     val appFile = AppFiles()
+    val token: MutableState<Resource<String>> = mutableStateOf(Resource.Empty())
 
     init {
         loadFiles()
@@ -52,6 +49,7 @@ class AnswersViewModel @Inject constructor(
             viewModelScope.launch {
                 allFiles.value = listFileRepository.listFiles()
             }
+            generateToken()
         }
 
     }
@@ -73,24 +71,41 @@ class AnswersViewModel @Inject constructor(
         }
         return result
     }
-
-    fun fileDownloader(url: String, outputName: String, desc: String, context: Context) {
-        //val dir = appFile.getCurDir(context)
-        val appDir: String = "AnswerKey"
-        val dir = File(Environment.DIRECTORY_DOCUMENTS)
-        if (!dir.exists())
-            dir.mkdirs()
-        //val appDirUri = dir.toUri()
+    private fun getUrl(fileId: String): String {
+        return "${DRIVE_API_BASE_URL}files/${fileId}?supportAllDrives=True&alt=media"
+    }
+    fun fileDownloader(
+        fileId: String,
+        outputName: String,
+        desc: String = "",
+        context: Context
+    ) {
+        val url = getUrl(fileId = fileId)
+        val authToken = token.value.data
+        Log.d(CUSTOM_INFO_DEBUG_LOG,"URL : $url\n TOKEN : $authToken")
         val request = DownloadManager.Request(Uri.parse(url))
+            .addRequestHeader("Authorization", authToken)
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
             .setTitle(outputName)
             .setDescription(desc)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
-            .setDestinationInExternalPublicDir(dir.toString(), "AnsKey/${outputName}")
+            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOCUMENTS, outputName)
+
 
         val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         dm.enqueue(request)
+    }
+
+    fun generateToken() {
+        token.value = Resource.Loading()
+        viewModelScope.launch {
+            try {
+                token.value = Resource.Success(authRepository.getToken())
+            } catch (t: Throwable) {
+                token.value = Resource.Error("ER : $t")
+            }
+        }
     }
 }

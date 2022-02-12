@@ -1,45 +1,37 @@
 package com.knightbyte.answers.network.cache
 
 import android.content.Context
+import android.os.Build
 import android.os.Environment
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.LocalContext
+import com.knightbyte.answers.utils.CUSTOM_CHECK_DEBUG_LOG
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 
-class AppFiles() {
+class AppFiles {
 
 
     fun getCurDir(context: Context): File {
         return context.filesDir
     }
 
+    fun getDocumentsPath(context:Context): File {
+        return File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!.absolutePath)
+    }
+
     fun getFileListSize(context: Context): Int {
+        val allFiles = getDocumentsPath(context).listFiles()
+        val files : MutableList<String> = mutableListOf()
+        allFiles.forEach { file ->
+            if (file.isFile){
+                files.add(file.name)
+                val fileSize = file.length()/(1024.0)
+                println("f - ${file.name} - ${fileSize} KB")
+            }
+        }
 
-//        val path2 = context.getExternalFilesDir(String())!!.path
-//        val path: String = Environment.getExternalStorageDirectory().toString() + "/Documents/AnsKey"
-//        val dir: File = File(path)
-//        val dir2: File = File(path2)
-//        Log.d("Test", "dir = ${dir}")
-//        Log.d("Test", "dir2 = ${dir2}")
-//        if (dir2.exists()) {
-//            val test = dir2.listFiles()
-//            Log.d("length", "${test!!.size}")
-//        }
-//        else {
-//            Log.d("Test", "sahi se nahi ho raha")
-//        }
-        val tempPath = File(context.getExternalFilesDir(String())!!.path)
-        val tempAbsPath = File(context.getExternalFilesDir(String())!!.absolutePath)
-        val tempCanPath = File(context.getExternalFilesDir(String())!!.canonicalPath)
-        Log.d("tempPath", "${tempPath}")
-        Log.d("tempAbsPath", "${tempAbsPath}")
-        Log.d("tempCanPath", "${tempCanPath}")
-
-        val newPath = context.getDir(Environment.DIRECTORY_DOCUMENTS, Context.MODE_PRIVATE)
-        Log.d("newPath", "${newPath}")
-
-        val files: Array<String> = context.fileList()
         return files.size
     }
 
