@@ -22,9 +22,9 @@ import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 
 @Composable
 fun SearchScreen(
-navController: NavHostController,
-answersViewModel: AnswersViewModel
-){
+    navController: NavHostController,
+    answersViewModel: AnswersViewModel
+) {
     var textState = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     Box(
@@ -50,22 +50,21 @@ answersViewModel: AnswersViewModel
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 10.dp)
-                ,
+                    .padding(start = 10.dp),
                 text = "Results ( ${result.size} )",
                 fontSize = 20.sp,
                 color = Color.Black
 
             )
             Spacer(modifier = Modifier.height(15.dp))
-            if(result.isNotEmpty()) {
+            if (result.isNotEmpty()) {
                 LazyColumn {
                     item {
                         result.forEach { answer ->
-                            val title = "${answer.testType} - ${answer.testName}"
                             SingleCard(
-                                title = title,
-                                testName = answer.testLevel,
+                                fileName = answer.fileName,
+                                fileId = answer.fileId,
+                                answersViewModel = answersViewModel
                             )
                             Spacer(modifier = Modifier.height(15.dp))
                         }

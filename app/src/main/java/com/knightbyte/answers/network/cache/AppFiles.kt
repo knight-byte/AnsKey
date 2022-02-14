@@ -27,17 +27,27 @@ class AppFiles {
         allFiles.forEach { file ->
             if (file.isFile){
                 files.add(file.name)
-                val fileSize = file.length()/(1024.0)
-                println("f - ${file.name} - ${fileSize} KB")
+//                val fileSize = file.length()/(1024.0)
+//                println("f - ${file.name} - ${fileSize} KB")
             }
         }
 
         return files.size
     }
 
-    fun getFiles(context: Context): Array<String> {
-        val files: Array<String> = context.fileList()
-        return files
+    fun getFiles(context: Context): MutableList<String> {
+        val allFiles = getDocumentsPath(context).listFiles()
+        val files : MutableList<String> = mutableListOf()
+        allFiles.forEach { file ->
+            if (file.isFile){
+                files.add(file.name)
+//                val fileSize = file.length()/(1024.0)
+//                println("f - ${file.name} - ${fileSize} KB")
+            }
+        }
+
+        return  files
+
     }
 
 }

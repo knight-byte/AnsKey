@@ -2,6 +2,7 @@ package com.knightbyte.answers.presentation.ui.screens
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,15 +25,13 @@ import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 import com.knightbyte.answers.utils.CUSTOM_ERROR_DEBUG_LOG
 import com.knightbyte.answers.utils.DRIVE_API_BASE_URL
 import com.knightbyte.answers.utils.Resource
+import java.io.File
 
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     answersViewModel: AnswersViewModel
 ) {
-    SideEffect {
-        answersViewModel.loadFiles()
-    }
     val allfiles = answersViewModel.allFiles.value
     var total: Int? = null
     var rawAnswers: List<TestFile>? = null
@@ -79,7 +78,7 @@ fun HomeScreen(
                 "Examly",
                 "HBE",
                 "InfyQt",
-                "Amcat",
+                "Misc",
             )
             LazyRow {
                 item {
@@ -92,26 +91,15 @@ fun HomeScreen(
             }
             Spacer(modifier = Modifier.height(15.dp))
             if (rawAnswers != null) {
-                val context = LocalContext.current
                 val answers = answersViewModel.searchFiles(query)
                 LazyColumn {
                     item {
                         answers.forEach { answer ->
-                            val title = "${answer.testType} - ${answer.testName}"
-
-                            val downloadAction= {
-                                answersViewModel.fileDownloader(
-                                    fileId = answer.fileId,
-                                    outputName = answer.fileName,
-                                    desc = title,
-                                    context = context
-                                )
-                            }
 
                             SingleCard(
-                                title = title,
-                                testName = answer.testLevel,
-                                DownloadAction = downloadAction
+                                fileName = answer.fileName,
+                                fileId = answer.fileId,
+                                answersViewModel = answersViewModel
                             )
                             Spacer(modifier = Modifier.height(15.dp))
                         }

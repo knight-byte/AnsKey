@@ -1,19 +1,13 @@
 package com.knightbyte.answers.presentation.viewmodel
 
-import android.annotation.TargetApi
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
-import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.knightbyte.answers.domain.model.TestFile
 import com.knightbyte.answers.repository.DriveFileRepository
@@ -25,9 +19,9 @@ import com.knightbyte.answers.network.cache.AppFiles
 import com.knightbyte.answers.repository.AuthRepository
 import com.knightbyte.answers.utils.CUSTOM_INFO_DEBUG_LOG
 import com.knightbyte.answers.utils.DRIVE_API_BASE_URL
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import me.xdrop.fuzzywuzzy.FuzzySearch
+import java.io.File
 
 @HiltViewModel
 class AnswersViewModel @Inject constructor(
@@ -45,11 +39,11 @@ class AnswersViewModel @Inject constructor(
 
     fun loadFiles() {
         if (allFiles.value.data == null || allFiles.value is Resource.Empty) {
+            generateToken()
             allFiles.value = Resource.Loading()
             viewModelScope.launch {
                 allFiles.value = listFileRepository.listFiles()
             }
-            generateToken()
         }
 
     }
@@ -71,18 +65,25 @@ class AnswersViewModel @Inject constructor(
         }
         return result
     }
+
     private fun getUrl(fileId: String): String {
         return "${DRIVE_API_BASE_URL}files/${fileId}?supportAllDrives=True&alt=media"
     }
+
     fun fileDownloader(
         fileId: String,
         outputName: String,
         desc: String = "",
         context: Context
     ) {
+        val file = File("${appFile.getDocumentsPath(context).absolutePath}/${outputName}")
+        if (file.isFile()) {
+            return
+        }
         val url = getUrl(fileId = fileId)
         val authToken = token.value.data
-        Log.d(CUSTOM_INFO_DEBUG_LOG,"URL : $url\n TOKEN : $authToken")
+        Log.d(CUSTOM_INFO_DEBUG_LOG, "URL : $url\n TOKEN : $authToken")
+
         val request = DownloadManager.Request(Uri.parse(url))
             .addRequestHeader("Authorization", authToken)
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
@@ -98,7 +99,7 @@ class AnswersViewModel @Inject constructor(
         dm.enqueue(request)
     }
 
-    fun generateToken() {
+    private fun generateToken() {
         token.value = Resource.Loading()
         viewModelScope.launch {
             try {
@@ -107,5 +108,20 @@ class AnswersViewModel @Inject constructor(
                 token.value = Resource.Error("ER : $t")
             }
         }
+    }
+
+    fun fileNameParser(
+        fileName: String
+    ): Map<String, String> {
+        val tempSplit = fileName.split("_")
+        val testType = tempSplit[0]
+        val testName = tempSplit[1]
+        val testLevel = tempSplit[2].split(".")[0]
+
+        return mapOf(
+            Pair("title", "$testType - $testName"),
+            Pair("testName", testLevel)
+        )
+
     }
 }

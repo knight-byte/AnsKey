@@ -23,10 +23,15 @@ import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 fun DownloadScreen(
     navController: NavHostController,
     answersViewModel: AnswersViewModel,
-
 ){
     val context = LocalContext.current
+    val totalDownload = remember {
+        mutableStateOf(0)
+    }
     val downloadedFiles = answersViewModel.appFile.getFiles(context)
+    SideEffect {
+        totalDownload.value = answersViewModel.appFile.getFileListSize(context)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -38,22 +43,11 @@ fun DownloadScreen(
             )
     ) {
         Column {
-//            Text(
-//                text = "Directory = ${answersViewModel.appFile.getCurDir(context)} ",
-//                fontSize = 18.sp,
-//                color = Color.Black
-//            )
             Spacer(modifier = Modifier.height(15.dp))
-            val totalDownload = remember {
-                mutableStateOf(0)
-            }
-            SideEffect {
-            totalDownload.value = answersViewModel.appFile.getFileListSize(context)
 
-            }
             Text(
                 text = "Downloaded ( ${totalDownload.value} )",
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(15.dp))
@@ -61,35 +55,16 @@ fun DownloadScreen(
                 LazyColumn {
                     item {
                         downloadedFiles.forEach { answer ->
-                            val fileName = answer
-                            val tempSplit= fileName.split("_")
-                            val testType = tempSplit[0]
-                            var testName = tempSplit[1]
-                            var testLevel = tempSplit[2].split(".")[0]
-                            val title = "${testType} - ${testName}"
                             SingleCard(
-                                title = title,
-                                testName = testLevel,
-                                DownloadIcon = false
+                                fileName = answer,
+                                answersViewModel = answersViewModel,
+                                delete = true
                             )
                             Spacer(modifier = Modifier.height(15.dp))
                         }
                         Spacer(modifier = Modifier.height(60.dp))
                     }
                 }
-            }
-            Button(onClick = {
-                answersViewModel.fileDownloader(
-                    "https://imgs.xkcd.com/comics/python.png",
-                    "PythonMeme.png",
-                    "Python Meme",
-                    context = context
-                    )
-            }) {
-                Text(
-                    text = "Download",
-                    color = Color.Black
-                )
             }
         }
     }
