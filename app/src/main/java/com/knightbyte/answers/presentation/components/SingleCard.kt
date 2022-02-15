@@ -30,6 +30,7 @@ import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 import com.knightbyte.answers.utils.CUSTOM_ERROR_DEBUG_LOG
 import java.io.File
 import android.R.attr.mimeType
+import android.os.Environment
 
 import androidx.core.content.FileProvider
 
@@ -86,34 +87,31 @@ fun SingleCard(
                 .padding(
                     start = 30.dp,
                     end = 30.dp,
-                ),
-            /*
-              FIXME : INTENT TO OPEN PDF
-             */
-//                .clickable(
-//                    onClick = {
-//                        if (!showDownloadButton) {
-//                            val intent = Intent(Intent.ACTION_VIEW)
-//                            intent.setDataAndType(Uri.fromFile(file), "application/pdf")
-//
-////                            val fileUri = FileProvider.getUriForFile(
-////                                context, context.applicationContext
-////                                    .packageName.toString() + ".provider", file
-////                            )
-////                            intent.setDataAndType(fileUri, "application/pdf")
-//                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//
-//
-////                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                            context.startActivity(intent)
-//
-//                        } else {
-//                            Toast
-//                                .makeText(context, "Download Before Opening", Toast.LENGTH_SHORT)
-//                                .show()
-//                        }
-//                    }
-//                )
+                )
+                .clickable(
+                    onClick = {
+                        if (!showDownloadButton) {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setAction(android.content.Intent.ACTION_VIEW)
+                            val temp = File(context.getExternalFilesDir(
+                                Environment.DIRECTORY_DOCUMENTS.toString() + File.separator + fileName)!!.absolutePath
+                            )
+                            val tempUri: Uri = FileProvider.getUriForFile(
+                                context,
+                                context.applicationContext.packageName + ".provider",
+                                temp
+                            )
+                            //Log.d("filename", "${temp}")
+                            intent.setDataAndType(tempUri, "application/pdf")
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            context.startActivity(intent)
+                        }
+                        else {
+                            Toast.makeText(context, "Download the file before opening", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                )
         ) {
             Row(
                 modifier = Modifier.align(Alignment.CenterStart),
