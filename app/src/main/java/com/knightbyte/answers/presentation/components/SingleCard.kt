@@ -30,6 +30,8 @@ import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
 import com.knightbyte.answers.utils.CUSTOM_ERROR_DEBUG_LOG
 import java.io.File
 import android.R.attr.mimeType
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.os.Environment
 
 import androidx.core.content.FileProvider
@@ -104,7 +106,18 @@ fun SingleCard(
                             //Log.d("filename", "${temp}")
                             intent.setDataAndType(tempUri, "application/pdf")
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            context.startActivity(intent)
+                            val possibleActivitiesList: List<ResolveInfo> =
+                                context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+                            if (possibleActivitiesList.size > 1) {
+                                val dialogText: String = "Choose a PDF Viewer"
+                                val chooser = dialogText.let { title ->
+                                    Intent.createChooser(intent, title)
+                                }
+                                context.startActivity(chooser)
+                            }
+                            else if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            }
                         }
                         else {
                             Toast.makeText(context, "Download the file before opening", Toast.LENGTH_SHORT)
