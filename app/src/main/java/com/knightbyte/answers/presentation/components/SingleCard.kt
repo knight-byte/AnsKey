@@ -106,18 +106,19 @@ fun SingleCard(
                             //Log.d("filename", "${temp}")
                             intent.setDataAndType(tempUri, "application/pdf")
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            val possibleActivitiesList: List<ResolveInfo> =
-                                context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
-                            if (possibleActivitiesList.size > 1) {
-                                val dialogText: String = "Choose a PDF Viewer"
-                                val chooser = dialogText.let { title ->
-                                    Intent.createChooser(intent, title)
-                                }
-                                context.startActivity(chooser)
-                            }
-                            else if (intent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(intent)
-                            }
+//                            val possibleActivitiesList: List<ResolveInfo> =
+//                                context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+//                            if (possibleActivitiesList.size > 1) {
+//                                val dialogText: String = "Choose a PDF Viewer"
+//                                val chooser = dialogText.let { title ->
+//                                    Intent.createChooser(intent, title)
+//                                }
+//                                context.startActivity(chooser)
+//                            }
+//                            else if (intent.resolveActivity(context.packageManager) != null) {
+//                                context.startActivity(intent)
+//                            }
+                            context.startActivity(intent)
                         }
                         else {
                             Toast.makeText(context, "Download the file before opening", Toast.LENGTH_SHORT)
