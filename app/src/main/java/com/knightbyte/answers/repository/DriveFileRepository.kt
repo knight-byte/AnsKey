@@ -19,7 +19,7 @@ class DriveFileRepository @Inject constructor(
     private val listDriveDtoMapper: ListDriveDtoMapper
 ) : DriveFilesInterface {
     override suspend fun listFiles(): Resource<List<TestFile>> {
-//        return try {
+        return try {
             val token = Constants.Token ?: authRepository.getToken()
 
             val driveID = Constants.DriveCredential!!.driveId
@@ -44,14 +44,14 @@ class DriveFileRepository @Inject constructor(
             }
 
             return Resource.Success(listDriveDtoMapper.mapToDomainList(testList))
-//        } catch (t: Throwable) {
-//            val error = when (t) {
-//                is IOException -> "Network Failure"
-//                is retrofit2.HttpException -> "Invalid Token Error"
-//
-//                else -> "Conversion Error : $t"
-//            }
-//            Resource.Error(error)
-//        }
+        } catch (t: Throwable) {
+            val error = when (t) {
+                is IOException -> "Network Failure"
+                is retrofit2.HttpException -> "Invalid Token Error"
+
+                else -> "Conversion Error : $t"
+            }
+            Resource.Error(error)
+        }
     }
 }
