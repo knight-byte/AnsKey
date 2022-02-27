@@ -66,12 +66,14 @@ fun SingleCard(
 
         downloadAction = {
             if (title != null) {
+                Toast.makeText(context, "Download started", Toast.LENGTH_SHORT).show()
                 answersViewModel.fileDownloader(
                     fileId = fileId,
                     outputName = fileName,
                     desc = title,
                     context = context
                 )
+
             }
         }
     }
@@ -95,8 +97,10 @@ fun SingleCard(
                         if (!showDownloadButton) {
                             val intent = Intent(Intent.ACTION_VIEW)
                             intent.setAction(android.content.Intent.ACTION_VIEW)
-                            val temp = File(context.getExternalFilesDir(
-                                Environment.DIRECTORY_DOCUMENTS.toString() + File.separator + fileName)!!.absolutePath
+                            val temp = File(
+                                context.getExternalFilesDir(
+                                    Environment.DIRECTORY_DOCUMENTS.toString() + File.separator + fileName
+                                )!!.absolutePath
                             )
                             val tempUri: Uri = FileProvider.getUriForFile(
                                 context,
@@ -119,9 +123,13 @@ fun SingleCard(
 //                                context.startActivity(intent)
 //                            }
                             context.startActivity(intent)
-                        }
-                        else {
-                            Toast.makeText(context, "Download the file before opening", Toast.LENGTH_SHORT)
+                        } else {
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Download the file before opening",
+                                    Toast.LENGTH_SHORT
+                                )
                                 .show()
                         }
                     }
@@ -180,6 +188,7 @@ fun SingleCard(
                             "$fileName Deleted Successfully",
                             Toast.LENGTH_SHORT
                         ).show()
+                        answersViewModel.updateDownloadFile()
                     } else {
                         Toast.makeText(context, "Fail to delete $fileName", Toast.LENGTH_SHORT)
                             .show()

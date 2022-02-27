@@ -11,14 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.knightbyte.answers.domain.model.TestFile
 import com.knightbyte.answers.repository.DriveFileRepository
-import com.knightbyte.answers.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.knightbyte.answers.network.cache.AppFiles
 import com.knightbyte.answers.repository.AuthRepository
-import com.knightbyte.answers.utils.CUSTOM_INFO_DEBUG_LOG
-import com.knightbyte.answers.utils.DRIVE_API_BASE_URL
+import com.knightbyte.answers.utils.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.io.File
@@ -26,26 +25,33 @@ import java.io.File
 @HiltViewModel
 class AnswersViewModel @Inject constructor(
     private val listFileRepository: DriveFileRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @ApplicationContext val context: Context
 ) : ViewModel() {
     val allFiles: MutableState<Resource<List<TestFile>>> = mutableStateOf(Resource.Empty())
     val homeCategory: MutableState<String> = mutableStateOf("")
     val appFile = AppFiles()
+    val downloadedFile : MutableState<List<String>> = mutableStateOf(listOf())
+
     val token: MutableState<Resource<String>> = mutableStateOf(Resource.Empty())
 
-    init {
-        loadFiles()
-    }
+    val firebaseStatus = CredentialProvider.firebaseStatus
+
 
     fun loadFiles() {
-        if (allFiles.value.data == null || allFiles.value is Resource.Empty) {
-            generateToken()
+
+        if (allFiles.value !is Resource.Loading && (allFiles.value.data == null || allFiles.value is Resource.Empty )) {
+//            generateToken()
             allFiles.value = Resource.Loading()
             viewModelScope.launch {
                 allFiles.value = listFileRepository.listFiles()
             }
         }
 
+    }
+
+    fun updateDownloadFile(){
+        downloadedFile.value = appFile.getFiles(context)
     }
 
     fun searchFiles(
@@ -81,7 +87,7 @@ class AnswersViewModel @Inject constructor(
             return
         }
         val url = getUrl(fileId = fileId)
-        val authToken = token.value.data
+        val authToken = Constants.Token
         Log.d(CUSTOM_INFO_DEBUG_LOG, "URL : $url\n TOKEN : $authToken")
 
         val request = DownloadManager.Request(Uri.parse(url))
@@ -97,6 +103,7 @@ class AnswersViewModel @Inject constructor(
 
         val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         dm.enqueue(request)
+        updateDownloadFile()
     }
 
     private fun generateToken() {

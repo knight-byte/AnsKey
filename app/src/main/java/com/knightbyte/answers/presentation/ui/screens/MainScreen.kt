@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -32,6 +33,8 @@ import com.knightbyte.answers.presentation.ui.theme.MyPurple500
 import com.knightbyte.answers.presentation.ui.theme.MyPurple700
 import com.knightbyte.answers.presentation.ui.theme.promptSans
 import com.knightbyte.answers.presentation.viewmodel.AnswersViewModel
+import com.knightbyte.answers.utils.CredentialProvider
+import com.knightbyte.answers.utils.Resource
 
 @Composable
 fun MainScreen(
@@ -43,11 +46,59 @@ fun MainScreen(
     Scaffold(
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) {
-        BottomNavGraph(
-            navController = navController,
-            answersViewModel = answersViewModel
 
-        )
+        when (CredentialProvider.firebaseStatus.value) {
+            is Resource.Error -> {
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        Text(
+                            text = "${answersViewModel.firebaseStatus.value.message.toString()} ",
+                            fontSize = 20.sp,
+                            color = Color.Black
+
+                        )
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            modifier = Modifier
+                                .background(MyPurple500)
+                                .padding(10.dp)
+                                .clickable {
+                                    CredentialProvider.getCredentials()
+                                },
+                            text = "Try Again",
+                            fontSize = 20.sp,
+                            color = Color.Black
+
+                        )
+                    }
+
+                }
+            }
+            is Resource.Loading -> {
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is Resource.Success -> {
+                answersViewModel.loadFiles()
+                BottomNavGraph(
+                    navController = navController,
+                    answersViewModel = answersViewModel
+                )
+            }
+            else -> {
+                CredentialProvider.getCredentials()
+            }
+        }
+
+
     }
 
 }

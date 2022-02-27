@@ -71,7 +71,12 @@ fun TotalAnswers(
                     textAlign = TextAlign.Center
                 )
             }else{
-                CircularProgressIndicator()
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
         }

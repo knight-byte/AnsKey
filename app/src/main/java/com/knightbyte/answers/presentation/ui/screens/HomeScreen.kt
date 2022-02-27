@@ -11,6 +11,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -107,7 +108,12 @@ fun HomeScreen(
                     }
                 }
             } else {
-                CircularProgressIndicator()
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }

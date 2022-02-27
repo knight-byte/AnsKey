@@ -5,7 +5,9 @@ import com.knightbyte.answers.domain.model.TestFile
 import com.knightbyte.answers.network.model.ListDriveDtoMapper
 import com.knightbyte.answers.network.model.ListDriveEntity
 import com.knightbyte.answers.network.services.DriveService
+import com.knightbyte.answers.utils.Constants
 import com.knightbyte.answers.utils.Resource
+import retrofit2.Retrofit
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,20 +19,23 @@ class DriveFileRepository @Inject constructor(
     private val listDriveDtoMapper: ListDriveDtoMapper
 ) : DriveFilesInterface {
     override suspend fun listFiles(): Resource<List<TestFile>> {
-        return try {
-            val token = authRepository.getToken()
+//        return try {
+            val token = Constants.Token ?: authRepository.getToken()
+
+            val driveID = Constants.DriveCredential!!.driveId
             val listFileResponse = driveService.listFiles(
                 token = token,
-                driveId = BuildConfig.DRIVE_ID,
+                driveId = driveID,
                 q = "mimeType='application/vnd.google-apps.folder'"
             )
             val testList: MutableList<ListDriveEntity> = mutableListOf()
+
             listFileResponse.files.forEach { folder ->
                 val folderId = folder.id
                 val query = "'${folderId}' in parents and mimeType='application/pdf'"
                 val singleResponse = driveService.listFiles(
                     token = token,
-                    driveId = BuildConfig.DRIVE_ID,
+                    driveId = driveID,
                     q = query
                 )
                 singleResponse.files.forEach {
@@ -39,12 +44,14 @@ class DriveFileRepository @Inject constructor(
             }
 
             return Resource.Success(listDriveDtoMapper.mapToDomainList(testList))
-        } catch (t: Throwable) {
-            val error = when (t) {
-                is IOException -> "Network Failure"
-                else -> "Conversion Error"
-            }
-            Resource.Error(error)
-        }
+//        } catch (t: Throwable) {
+//            val error = when (t) {
+//                is IOException -> "Network Failure"
+//                is retrofit2.HttpException -> "Invalid Token Error"
+//
+//                else -> "Conversion Error : $t"
+//            }
+//            Resource.Error(error)
+//        }
     }
 }

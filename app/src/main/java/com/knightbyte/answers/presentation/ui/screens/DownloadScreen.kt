@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -28,10 +25,13 @@ fun DownloadScreen(
     val totalDownload = remember {
         mutableStateOf(0)
     }
-    val downloadedFiles = answersViewModel.appFile.getFiles(context)
+
+//     answersViewModel.appFile.getFiles(context)
     SideEffect {
+        answersViewModel.updateDownloadFile()
         totalDownload.value = answersViewModel.appFile.getFileListSize(context)
     }
+    val downloadedFiles = answersViewModel.downloadedFile.value
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -6,6 +6,8 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.secrets_gradle_plugin' version '0.4'
+
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -94,4 +96,6 @@ dependencies {
 
     def fuzzy_wuzzy_version = "1.4.0"
     implementation "me.xdrop:fuzzywuzzy:$fuzzy_wuzzy_version"
+
+    implementation 'com.google.firebase:firebase-appcheck-safetynet:16.0.0-beta04'
 }
