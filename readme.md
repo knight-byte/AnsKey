@@ -1,4 +1,4 @@
-<div style="text-align:center"><img src="assets/banner.png" /></div>
+<div style="text-align:center"><img src="assets/banner.png"/></div>
 
 ---
 
@@ -21,8 +21,8 @@ Do fork and star 🌟 this repository if you like it.
 ### Todo
 
 - [x] Download Feature
-- [] Optimize the content Delivery/ pagination
-- [] Release Build
+- [-] Optimize the content Delivery/ pagination
+- [-] Release Build
 
 ### Note
 
